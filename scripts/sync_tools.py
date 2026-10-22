@@ -348,10 +348,15 @@ def main() -> int:
             continue
 
         build_dir = out_dir / "apps" / tool_id
+        icon_target = out_dir / "assets" / "icons" / f"{tool_id}.png"
         known = previous_versions.get(tool_id)
         if known == version and not args.force and not args.dry_run and build_present(build_dir):
             print(f"  · {version} już wdrożone - bez zmian")
-            manifest_tools[tool_id] = previous_tools[tool_id]
+            icon_before = icon_target.exists()
+            icon = find_icon(tool, build_dir, out_dir) or previous_tools.get(tool_id, {}).get("icon")
+            manifest_tools[tool_id] = {**previous_tools[tool_id], "icon": icon}
+            if not icon_before and icon_target.exists():
+                changed = True
             continue
         if known == version and not args.dry_run and not build_present(build_dir):
             print(f"  · {version} wdrożone, ale brak plików lokalnie - pobieram ponownie")
