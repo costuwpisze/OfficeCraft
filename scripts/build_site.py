@@ -26,7 +26,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import REPO_ROOT, esc, parse_config, read_manifest, render  # noqa: E402
 
 SITE_TITLE = "OfficeCraft"
-SITE_TAGLINE = "Narzędzia PDF, CAD i modelowania 3D - wszystko działa w Twojej przeglądarce."
+SITE_TAGLINE = "Narzędzia biurowe oraz CAD - wszystko działa w Twojej przeglądarce."
 
 ROBOTS = """User-agent: *
 Allow: /
@@ -51,7 +51,22 @@ def icon_html(info: Dict[str, Any], base: str, cls: str, fallback_cls: str) -> s
     if icon:
         return f'<img class="{cls}" src="{esc(icon)}" alt="" loading="lazy">'
     initial = esc(((info.get("label") or info.get("id") or "?")[:1]).upper())
-    return f'<span class="{fallback_cls}">{initial}</span>' 
+    return f'<span class="{fallback_cls}">{initial}</span>'
+
+
+FAVICON_SVG = (
+    "%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 32 32%22%3E"
+    "%3Crect width=%2232%22 height=%2232%22 rx=%228%22 fill=%22%232f6df6%22/%3E"
+    "%3Ctext x=%2216%22 y=%2222%22 font-family=%22sans-serif%22 font-weight=%22700%22"
+    " font-size=%2220%22 fill=%22%23ffffff%22 text-anchor=%22middle%22%3EOC"
+    "%3C/text%3E%3C/svg%3E"
+)
+
+
+def favicon_html(src: str) -> str:
+    if src:
+        return f'<link rel="icon" href="{esc(src)}" sizes="any">'
+    return f'<link rel="icon" href="data:image/svg+xml,{FAVICON_SVG}">' 
 
 
 def human_size(size: int) -> str:
@@ -129,6 +144,7 @@ def build_tool_pages(site_dir: Path, out_dir: Path, manifest: Dict[str, Any]) ->
         context = {
             "BASE": base,
             "TOOL_ICON_HTML": icon_html(info, base, "bar-icon", "bar-icon--fallback"),
+            "TOOL_FAVICON": favicon_html(local_path(base, info.get("icon") or "")),
             "SITE_TITLE": SITE_TITLE,
             "TOOL_ID": esc(tool_id),
             "TOOL_LABEL": esc(info.get("label") or tool_id),
@@ -194,6 +210,7 @@ def main() -> int:
 
     hub_context = {
         "BASE": "",
+        "HUB_FAVICON": favicon_html(""),
         "SITE_TITLE": SITE_TITLE,
         "SITE_TAGLINE": esc(SITE_TAGLINE),
         "LAST_SYNC": esc(format_time(manifest.get("generated_at") or "")),

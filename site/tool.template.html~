@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TOOL_LABEL}} · {{SITE_TITLE}}</title>
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="{{BASE}}assets/base.css">
+<link rel="stylesheet" href="{{BASE}}assets/tool.css">
+</head>
+<body class="tool-body">
+  <header class="bar">
+    <a class="bar-back" href="{{BASE}}" title="Wróć do listy narzędzi" aria-label="Wróć do listy narzędzi">
+      <span aria-hidden="true">←</span>
+    </a>
+    {{TOOL_ICON_HTML}}
+    <span class="bar-name">{{TOOL_LABEL}}</span>
+    <span class="badge">v{{TOOL_VERSION}}</span>
+    <span class="bar-spacer"></span>
+    <a class="bar-btn" href="{{TOOL_APP_PATH}}index.html" target="_blank" rel="noopener">Nowa karta</a>
+    <button class="bar-btn" type="button" id="fullscreen">Pełny ekran</button>
+    <a class="bar-btn bar-btn--ghost" href="{{TOOL_PAGE_URL}}" target="_blank" rel="noopener">Projekt ↗</a>
+  </header>
+
+  <div class="stage">
+    <iframe id="app" src="{{TOOL_APP_PATH}}index.html" title="{{TOOL_LABEL}}"
+            allow="fullscreen; clipboard-read; clipboard-write; downloads" allowfullscreen></iframe>
+    <div class="stage-hint" id="hint">
+      <span class="spinner" aria-hidden="true"></span>
+      <span>Wczytuję {{TOOL_LABEL}}…</span>
+    </div>
+  </div>
+
+<script>
+  var frame = document.getElementById('app');
+  var hint = document.getElementById('hint');
+  frame.addEventListener('load', function () { hint.classList.add('is-hidden'); });
+  document.getElementById('fullscreen').addEventListener('click', function () {
+    if (document.fullscreenElement) { document.exitFullscreen(); return; }
+    var target = document.querySelector('.stage');
+    if (target.requestFullscreen) { target.requestFullscreen(); }
+  });
+</script>
+</body>
+</html>

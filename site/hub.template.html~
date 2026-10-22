@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{SITE_TITLE}}</title>
+<meta name="description" content="{{SITE_TAGLINE}}">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f13" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="{{BASE}}assets/base.css">
+<link rel="stylesheet" href="{{BASE}}assets/hub.css">
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <p class="eyebrow">{{SITE_TITLE}}</p>
+    <p class="lede">{{SITE_TAGLINE}}</p>
+    <p class="meta-line">
+      <span>{{TOOL_COUNT}}</span>
+      <span class="dot">·</span>
+      <span>aktualizacja {{LAST_SYNC}}</span>
+    </p>
+  </header>
+
+  <section class="grid" aria-label="Narzędzia">
+<!--BLOCK:TOOL_CARDS-->
+  </section>
+
+  <footer class="foot">
+    <p>Nic nie jest wysyłane na serwer — pliki zostają na Twoim komputerze.</p>
+    <p>Wersje pochodzą z wydań <a href="https://github.com/costuwpisze/OfficeCraft" target="_blank" rel="noopener">GitHub</a>. Bez kont, bez plików cookie.</p>
+  </footer>
+</main>
+</body>
+</html>
