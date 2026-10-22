@@ -22,8 +22,18 @@
 https://github.com/storytold/pdfcraft
 Czytaj, porządkuj, łącz i zabezpieczaj pliki PDF - w przeglądarce.
 
+https://github.com/storytold/wordcraft
+
+https://github.com/storytold/gridcraft
+
 https://github.com/storytold/cadcraft
 Rysowanie 2D i 3D w stylu AutoCADa: warstwy, wymiary, kresowanie, DXF - w przeglądarce.
 
 https://github.com/tangency-labs/solidcraft
 Parametryczne modelowanie 3D w stylu SolidWorksa - w przeglądarce.
+
+https://github.com/storytold/deckcraft
+
+https://github.com/storytold/vectorcraft
+
+https://github.com/storytold/lightcraft

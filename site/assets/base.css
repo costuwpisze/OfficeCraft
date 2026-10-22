@@ -95,9 +95,9 @@ h1, h2, h3 { font-weight: 650; }
 
 .lede {
   margin: 0;
-  max-width: 54ch;
   color: var(--muted);
   font-size: clamp(0.98rem, 1.5vw, 1.06rem);
+  max-width: none;
 }
 
 .meta-line {

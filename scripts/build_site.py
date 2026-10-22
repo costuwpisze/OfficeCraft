@@ -150,7 +150,8 @@ def build_tool_pages(site_dir: Path, out_dir: Path, manifest: Dict[str, Any]) ->
             "TOOL_LABEL": esc(info.get("label") or tool_id),
             "TOOL_VERSION": esc(info.get("version") or "?"),
             "TOOL_BLURB": esc(info.get("blurb") or ""),
-            "TOOL_PAGE_URL": esc(info.get("page") or ""),
+            "TOOL_PAGE_URL": esc(f"https://github.com/{info.get('repo')}"),
+            "TOOL_PAGE_LABEL": esc((info.get("repo") or "").replace("/", "/")),
             "TOOL_APP_PATH": esc(app_path),
             "TOOL_TAG": esc(info.get("tag") or ""),
         }
