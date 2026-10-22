@@ -18,10 +18,11 @@
 
   <section class="panel">
     <div class="panel-head">
-      <h2>Wdrożone wersje</h2>
+      <h2>Lista narzędzi</h2>
       <span class="muted" id="sync-stamp">ostatnia synchronizacja: {{LAST_SYNC}}</span>
     </div>
     <div id="status" class="status">Wczytywanie…</div>
+    <div id="skipped" class="status"></div>
   </section>
 
   <section class="panel">
@@ -46,13 +47,6 @@
     </details>
 
     <div id="log" class="log" hidden></div>
-  </section>
-
-  <section class="panel">
-    <div class="panel-head">
-      <h2>Lista narzędzi</h2>
-    </div>
-    <div id="tools" class="status status--list">…</div>
   </section>
 
   <footer class="foot">

@@ -123,8 +123,6 @@
 
 .panel .muted--tiny { margin: 0; }
 .panel .muted--inline { margin: 0; }
-
-.details {
   margin-top: 18px;
   padding-top: 16px;
   border-top: 1px solid var(--border);

@@ -99,25 +99,34 @@
   }
 
   function renderTools() {
-    var host = document.getElementById("tools");
+    var deployed = cfg.tools || {};
     var skipped = cfg.skipped || {};
-    var tools = cfg.tools || {};
+    var host = document.getElementById("status");
     var parts = [];
-    Object.keys(tools).forEach(function (id) {
+    Object.keys(deployed).forEach(function (id) {
+      var t = deployed[id];
       parts.push(
         "<li><code>" +
           escapeHtml(id) +
           "</code> - " +
-          escapeHtml(tools[id].repo) +
+          escapeHtml(t.repo) +
           " (v" +
-          escapeHtml(tools[id].version) +
+          escapeHtml(t.version) +
           ")</li>"
       );
     });
+    host.innerHTML = parts.length ? "<ul>" + parts.join("") + "</ul>" : '<p class="muted">Brak wdrożonych narzędzi.</p>';
+
+    var shost = document.getElementById("skipped");
+    var sparts = [];
     Object.keys(skipped).forEach(function (id) {
-      parts.push("<li><code>" + escapeHtml(id) + "</code> - pominięte: " + escapeHtml(skipped[id]) + "</li>");
+      sparts.push("<li><code>" + escapeHtml(id) + "</code> - pominięte: " + escapeHtml(skipped[id]) + "</li>");
     });
-    host.innerHTML = parts.length ? "<ul>" + parts.join("") + "</ul>" : '<p class="muted">Brak danych.</p>';
+    if (sparts.length) {
+      shost.innerHTML = '<p class="muted muted--tiny">Pominięte (brak wersji webowej):</p><ul>' + sparts.join("") + "</ul>";
+    } else {
+      shost.innerHTML = "";
+    }
   }
 
   // ------------------------------------------------------- sprawdzanie wersji
