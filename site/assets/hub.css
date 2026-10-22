@@ -95,8 +95,9 @@ a.card:hover .plate {
   color: var(--muted);
   font-size: 0.82rem;
   line-height: 1.5;
+  white-space: pre-line;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
