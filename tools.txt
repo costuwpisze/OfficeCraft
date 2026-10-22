@@ -1,0 +1,29 @@
+# Narzędzia dostępne w OfficeCraft.
+#
+# Jedno narzędzie = jeden akapit (blok rozdzielony pustą linią):
+#   * pierwsza linia  - link do repozytorium GitHub
+#   * kolejne linie   - opcjonalny opis (może być zapisany wieloma wierszami)
+#
+# Wszystko poza linkiem i opisem jest wykrywane automatycznie z API GitHuba:
+# nazwa, wersja (zawsze stable), ikona, link do projektu, plik do pobrania.
+#
+# Narzędzie pojawi się w hubie, jeśli jego najnowsze wydanie zawiera asset
+# "<nazwa-repo>-web-<wersja>.zip" (np. pdfcraft-web-0.11.0.zip).
+# Wydania prerelease (nightly) są pomijane.
+#
+# Opcjonalne ustawienia po "|" (nie trzeba używać):
+#   id=<identyfikator>        ścieżka w witrynie, domyślnie nazwa repo
+#   label=<nazwa>             nazwa do wyświetlenia
+#   page=<url>                link do strony projektu
+#   icon=<url>                własna ikona
+#   asset=<wzorzec>           wzorzec assetu, {v} = wersja, {id} = identyfikator
+#   repo=<owner/repo>         jawne repozytorium (gdy link nie jest adresem GitHuba)
+
+https://github.com/storytold/pdfcraft
+Czytaj, porządkuj, łącz i zabezpieczaj pliki PDF - w przeglądarce.
+
+https://github.com/storytold/cadcraft
+Rysowanie 2D i 3D w stylu AutoCADa: warstwy, wymiary, kresowanie, DXF - w przeglądarce.
+
+https://github.com/tangency-labs/solidcraft
+Parametryczne modelowanie 3D w stylu SolidWorksa - w przeglądarce.

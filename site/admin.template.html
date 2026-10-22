@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Administracja · {{SITE_TITLE}}</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="stylesheet" href="/assets/base.css">
+<link rel="stylesheet" href="/assets/admin.css">
+</head>
+<body class="admin-body">
+<main class="wrap">
+  <header class="hero hero--small">
+    <h1 class="hero-title">Administracja</h1>
+    <p class="hero-tagline">Strona jest ukryta - nie jest linkowana z huba i jest wykluczona z indeksowania.</p>
+  </header>
+
+  <section class="panel">
+    <h2>Wdrożone wersje</h2>
+    <div id="status" class="status">Wczytywanie…</div>
+    <p class="muted">Ostatnia synchronizacja: {{LAST_SYNC}}</p>
+  </section>
+
+  <section class="panel">
+    <h2>Uruchom aktualizację</h2>
+    <p class="muted">Aktualizacja pobiera tylko te narzędzia, których wersja się zmieniła. Jeśli wszystko jest aktualne, nic nie zostanie pobrane ani wdrożone.</p>
+
+    <div class="row">
+      <a class="btn btn--primary" id="github-run" href="#" target="_blank" rel="noopener">Uruchom przez GitHub (zalecane)</a>
+      <span class="muted">Otworzy się GitHub Actions - zaloguj się i kliknij <em>Run workflow</em>.</span>
+    </div>
+
+    <details class="details">
+      <summary>Uruchom tokenem (PAT) zamiast logowania do GitHuba</summary>
+      <p class="muted">Token to „hasło do API GitHuba". Wklej token z uprawnieniem <em>Actions: Read and write</em> tylko dla repozytorium {{SITE_TITLE}}. Token zostaje w tej karcie przeglądarki (sessionStorage) i jest wysyłany wyłącznie do api.github.com.</p>
+      <form id="pat-form" autocomplete="off">
+        <input type="password" id="pat" placeholder="ghp_… albo github_pat_…" spellcheck="false">
+        <button class="btn" type="submit">Sprawdź i uruchom</button>
+      </form>
+      <p class="muted">Krok po kroku: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token → Repository access: tylko OfficeCraft → Permissions → Actions: Read and write.</p>
+    </details>
+
+    <div id="log" class="log" hidden></div>
+  </section>
+
+  <section class="panel">
+    <h2>Lista narzędzi</h2>
+    <div id="tools" class="status">…</div>
+  </section>
+</main>
+
+<script id="officecraft-config" type="application/json">{{CONFIG_JSON}}</script>
+<script src="/assets/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+name: Sync tools
+
+# Codziennie sprawdza, czy narzędzia mają nowsze wydania, i wdraża je na GitHub Pages.
+# Ten sam przebieg można uruchomić ręcznie ze strony /admin/ lub przyciskiem
+# "Run workflow" w zakładce Actions.
+
+on:
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+    inputs:
+      force:
+        description: 'Wymuś ponowne pobranie (ignoruj porównanie wersji)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: sync-tools
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Pobierz kod
+        uses: actions/checkout@v4
+
+      - name: Ustaw Pythona
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Sprawdź GitHub i pobierz nowe wersje
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: |
+          python3 scripts/sync_tools.py --out site-out --config tools.txt ${{ inputs.force && '--force' || '' }}
+          echo "--- manifest ---"
+          cat site-out/manifest.json
+
+      - name: Zbuduj stronę
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          SYNC_WORKFLOW: sync-tools.yml
+        run: python scripts/build_site.py --out site-out --config tools.txt
+
+      - name: Czy jest co wdrażać?
+        id: check
+        run: |
+          if [ -f .deploy-needed ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+            echo "Wykryto zmiany - wdrażam na Pages."
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+            echo "Wszystkie narzędzia są aktualne - pomijam wdrożenie."
+          fi
+
+      - name: Skonfiguruj Pages
+        if: steps.check.outputs.needed == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Wgraj artefakt
+        if: steps.check.outputs.needed == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site-out
+
+      - name: Wdroż na GitHub Pages
+        if: steps.check.outputs.needed == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{SITE_TITLE}}</title>
+<meta name="description" content="{{SITE_TAGLINE}}">
+<meta name="robots" content="index, follow">
+<link rel="stylesheet" href="/assets/base.css">
+<link rel="stylesheet" href="/assets/hub.css">
+</head>
+<body>
+<main class="wrap">
+  <header class="hero">
+    <h1 class="hero-title">{{SITE_TITLE}}</h1>
+    <p class="hero-tagline">{{SITE_TAGLINE}}</p>
+    <p class="hero-meta">
+      <span class="badge badge--muted">{{TOOL_COUNT}} narzędzi</span>
+      <span class="dot">·</span>
+      <span>ostatnia synchronizacja: {{LAST_SYNC}}</span>
+    </p>
+  </header>
+
+  <section class="grid" aria-label="Narzędzia">
+<!--BLOCK:TOOL_CARDS-->
+  </section>
+
+  <footer class="foot">
+    <p>Każde narzędzie działa w przeglądarce (WebAssembly). Pliki, które otwierasz, nie opuszczają Twojego komputera.</p>
+    <p class="foot-small">Wersje narzędzi pobierane są automatycznie z wydań GitHuba. Strona nie gromadzi danych i nie używa plików cookie.</p>
+  </footer>
+</main>
+</body>
+</html>
