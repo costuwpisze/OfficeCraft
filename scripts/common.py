@@ -72,7 +72,7 @@ def parse_config(path: Path) -> List[Dict[str, Any]]:
             if key:
                 overrides[key] = value.strip()
 
-        blurb = " ".join(block_lines[1:]).strip()
+        blurb = "\n".join(block_lines[1:]).strip()  # This joins with newlines!
 
         owner, repo = _split_repo(source, overrides)
         tool_id = slugify(overrides.get("id") or repo)
