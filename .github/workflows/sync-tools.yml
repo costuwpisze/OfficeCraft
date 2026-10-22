@@ -7,6 +7,13 @@ name: Sync tools
 on:
   schedule:
     - cron: '17 5 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'site/**'
+      - 'scripts/**'
+      - 'tools.txt'
+      - '.github/workflows/sync-tools.yml'
   workflow_dispatch:
     inputs:
       force:
@@ -31,12 +38,22 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Pobierz kod
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Ustaw Pythona
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+
+      - name: Przygotuj katalog buildów
+        run: mkdir -p site-out/apps
+
+      - name: Odtwórz pobrane buildy z cache
+        uses: actions/cache@v6
+        with:
+          path: site-out/apps
+          key: apps-${{ github.run_id }}
+          restore-keys: apps-
 
       - name: Sprawdź GitHub i pobierz nowe wersje
         env:
@@ -56,8 +73,10 @@ jobs:
 
       - name: Czy jest co wdrażać?
         id: check
+        env:
+          EVENT: ${{ github.event_name }}
         run: |
-          if [ -f .deploy-needed ]; then
+          if [ -f .deploy-needed ] || [ "$EVENT" = "push" ]; then
             echo "needed=true" >> "$GITHUB_OUTPUT"
             echo "Wykryto zmiany - wdrażam na Pages."
           else
@@ -67,15 +86,16 @@ jobs:
 
       - name: Skonfiguruj Pages
         if: steps.check.outputs.needed == 'true'
-        uses: actions/configure-pages@v5
+        uses: actions/configure-pages@v6
 
       - name: Wgraj artefakt
         if: steps.check.outputs.needed == 'true'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site-out
+          include-hidden-files: true
 
       - name: Wdroż na GitHub Pages
         if: steps.check.outputs.needed == 'true'
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5

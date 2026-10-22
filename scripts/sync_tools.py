@@ -12,7 +12,7 @@ Przebieg:
   4. pobiera i rozpakowuje TYLKO narzędzia, których wersja się zmieniła,
   5. zapisuje manifest.json do katalogu wyjściowego.
 
-Pliki są wgrywane do Cloudflare Pages przez akcję GitHub (deploy-pages).
+Pliki są wgrywane na GitHub Pages przez akcję GitHub (deploy-pages).
 """
 
 from __future__ import annotations
@@ -112,6 +112,11 @@ def pick_asset(release: Dict[str, Any], tool: Dict[str, Any], version: str) -> O
         if name.endswith(".zip") and "-web-" in name:
             return asset
     return None
+
+
+def build_present(build_dir: Path) -> bool:
+    """Czy build narzędzia faktycznie leży na dysku (cache mógł nie wrócić)."""
+    return build_dir.is_dir() and any(build_dir.iterdir())
 
 
 def find_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) -> Optional[str]:
@@ -342,18 +347,20 @@ def main() -> int:
                 manifest_tools[tool_id] = previous_tools[tool_id]
             continue
 
+        build_dir = out_dir / "apps" / tool_id
         known = previous_versions.get(tool_id)
-        if known == version and not args.force and not args.dry_run:
+        if known == version and not args.force and not args.dry_run and build_present(build_dir):
             print(f"  · {version} już wdrożone - bez zmian")
             manifest_tools[tool_id] = previous_tools[tool_id]
             continue
+        if known == version and not args.dry_run and not build_present(build_dir):
+            print(f"  · {version} wdrożone, ale brak plików lokalnie - pobieram ponownie")
 
         print(f"  · wydanie {tag} ({asset.get('name')}, {round((asset.get('size') or 0) / 1e6, 1)} MB)")
         if args.dry_run:
             print("  · tryb --dry-run: pomijam pobieranie")
             continue
 
-        build_dir = out_dir / "apps" / tool_id
         if build_dir.exists():
             shutil.rmtree(build_dir)
         build_dir.mkdir(parents=True, exist_ok=True)

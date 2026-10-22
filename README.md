@@ -97,8 +97,9 @@ zaznacz `force`.
 2. Wypchnij pliki na gałąź `main`.
 3. W repozytorium: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
    Przy pierwszym uruchomieniu kliknij w podpowiedzi **Configure Pages → GitHub Actions**.
-4. Zakładka **Actions → sync-tools.yml → Run workflow**.
-   Przebieg pobierze ~45 MB i wgra ~115 MB na Pages; trwa 3–5 minut.
+4. Wypchnij zmiany na `main` - workflow uruchomi się sam przy zmianie `site/`,
+   `scripts/`, `tools.txt` lub samego workflow. Pierwszy przebieg pobierze ~45 MB
+   i wgra ~115 MB na Pages; trwa 3–5 minut. Kolejne korzystają z cache buildów.
 
 Adres strony: `https://<twoj-nick>.github.io/OfficeCraft/`
 
@@ -117,13 +118,38 @@ normalnie do GitHuba i klikasz **Run workflow**.
 
 **B. Tokenem (PAT)** - *Personal Access Token* to „hasło do API GitHuba": długi ciąg znaków,
 który dowodzi, że to Ty, działa tylko na to, co mu dasz, ma datę ważności i można go
-unieważnić w każdej chwili. Tworzysz go w GitHub → **Settings → Developer settings →
+unieważnić w każdej chwiej. Tworzysz go w GitHub → **Settings → Developer settings →
 Personal access tokens → Fine-grained tokens → Generate new token**:
 
-- nazwa: `OfficeCraft admin`
-- ważność: 90 dni
-- **Repository access: only OfficeCraft**
-- **Permissions → Actions: Read and write**
+- nazwa: `OfficeCraft`
+- ważność: 90 dni (lub dłużej)
+- **Resource owner:** Twoje konto
+- **Repository access: Only select repositories → OfficeCraft**
+- **Repository permissions:**
+  | Uprawnienie | Poziom | Po co |
+  |---|---|---|
+  | **Contents** | Read and write | `git push` (wypychanie plików) |
+  | **Actions** | Read and write | uruchamianie i odczyt przebiegów workflow (`/admin/`) |
+  | **Workflows** | Read and write | `git push` plików z `.github/workflows/` (Twój pierwszy commit zawiera workflow) |
+- **Generate token** → skopiuj token (widoczny tylko raz)
+
+Jeden token wystarczy na oba zastosowania. Uprawnienia **Pages** nie są potrzebne -
+wdrażanie na strony robi sam workflow na automatycznym `GITHUB_TOKEN`.
+
+Sprawdzenie tokenta:
+
+```bash
+curl -s -H "Authorization: Bearer TWOJ_TOKEN" https://api.github.com/repos/TWOJ-NICK/OfficeCraft | head -3
+```
+
+Przy `git push` po HTTPS: login = Twój nick, hasło = token (GitHub nie przyjmuje hasła konta).
+Token możesz zapamiętać, żeby nie wklejać go za każdym razem:
+
+```bash
+git config --global credential.helper store    # zapisuje w ~/.git-credentials (tekstem!)
+```
+
+Alternatywa bez tokenu do pchania: **SSH** (`git remote add origin git@github.com:TWOJ-NICK/OfficeCraft.git`).
 
 Token wklejasz w polu na stronie `/admin/`. Trzymany jest w `sessionStorage` (znika po
 zamknięciu karty) i wysyłany **wyłącznie do `api.github.com** - nigdzie indziej.
@@ -156,6 +182,7 @@ konto bez tokenu; limit API GitHuba to 60 zapytań na godzinę na adres IP.
 | Pasmo | miękki limit GitHuba: **100 GB miesięcznie**. Jedno uruchomienie SolidCraft to ~51 MB, więc ~2000 uruchomień miesięcznie |
 | Typ MIME `.wasm` | GitHub Pages podaje `application/wasm`; gdyby podał inny, aplikacja i tak ruszy (wolniej, bez streamingu) - kod glue ma na to fallback |
 | Cron Actions | uruchamia się z opóźnieniem do ~1 h; **wyłącza się po 60 dniach bez aktywności repozytorium** - dlatego jest `/admin/` |
+| Cache buildów | `site-out/apps` (~120 MB) jest odtwarzany między przebiegami, więc codzienna synchronizacja pobiera tylko nowe wersje |
 | Aktualizacja | trwa 3–5 min (pobranie + wgranie ~115 MB) |
 | Service worker SolidCraft | wymaga, aby cały build leżał w jednym katalogu - dlatego buildy są w `/apps/<id>/`, nietknięte |
 

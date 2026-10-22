@@ -30,17 +30,47 @@ SITE_TAGLINE = "Narzędzia PDF, CAD i modelowania 3D - wszystko działa w Twojej
 
 ROBOTS = """User-agent: *
 Allow: /
-Disallow: /admin/
+
+User-agent: *
+Disallow: {prefix}admin/
 """
+
+
+def local_path(base: str, value: str) -> str:
+    """Zamienia ścieżkę absolutną (``/apps/x/``) na relatywną do podkatalogu strony."""
+    value = (value or "").strip()
+    if not value:
+        return ""
+    if re.match(r"^(?:[a-z][a-z0-9+.-]*:)?//", value, re.IGNORECASE) or value.startswith("data:"):
+        return value
+    return base + value.lstrip("/")
+
+
+def icon_html(info: Dict[str, Any], base: str, cls: str, fallback_cls: str) -> str:
+    icon = local_path(base, info.get("icon") or "")
+    if icon:
+        return f'<img class="{cls}" src="{esc(icon)}" alt="" loading="lazy">'
+    initial = esc(((info.get("label") or info.get("id") or "?")[:1]).upper())
+    return f'<span class="{fallback_cls}">{initial}</span>' 
 
 
 def human_size(size: int) -> str:
     value = float(size or 0)
     for unit in ("B", "KB", "MB", "GB"):
         if value < 1000 or unit == "GB":
-            return f"{value:.0f} {unit}" if unit == "B" else f"{value:.1f} {unit}"
+            text = f"{value:.0f}" if unit == "B" else f"{value:.1f}"
+            return f"{text.replace('.', ',')} {unit}"
         value /= 1000
     return f"{value:.1f} GB"
+
+
+def plural_tools(count: int) -> str:
+    """Polska odmiana: 1 narzędzie, 2 narzędzia, 5 narzędzi."""
+    if count == 1:
+        return "1 narzędzie"
+    if count % 10 in (2, 3, 4) and count % 100 not in (12, 13, 14):
+        return f"{count} narzędzia"
+    return f"{count} narzędzi"
 
 
 def format_time(value: str) -> str:
@@ -53,37 +83,37 @@ def format_time(value: str) -> str:
     return stamp.astimezone().strftime("%d.%m.%Y %H:%M")
 
 
-def tool_card(tool_id: str, info: Dict[str, Any]) -> str:
-    icon = info.get("icon")
+def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
+    fallback = esc(((info.get("label") or tool_id)[:1]).upper())
+    icon = local_path(base, info.get("icon") or "")
     if icon:
-        icon_html = f'<img class="card-icon" src="{esc(icon)}" alt="" loading="lazy">'
+        plate = f'<img class="card-icon" src="{esc(icon)}" alt="" loading="lazy">'
     else:
-        initial = esc((info.get("label") or tool_id)[:1].upper())
-        icon_html = f'<div class="card-icon card-icon--fallback">{initial}</div>'
+        plate = f'<span class="card-icon card-icon--fallback">{fallback}</span>'
 
     blurb = info.get("blurb") or ""
+    size = human_size(info.get("bytes") or 0)
     return f"""
-      <a class="card" href="/tool/{esc(tool_id)}/">
-        {icon_html}
+      <a class="card" href="{esc(base)}tool/{esc(tool_id)}/">
+        <div class="plate">{plate}</div>
         <div class="card-body">
           <h2>{esc(info.get('label') or tool_id)}</h2>
           <p class="card-blurb">{esc(blurb)}</p>
           <p class="card-meta">
             <span class="badge">v{esc(info.get('version') or '?')}</span>
-            <span class="card-size">{esc(human_size(info.get('bytes') or 0))} · przeglądarka</span>
+            <span>{esc(size)}</span>
           </p>
         </div>
-        <span class="card-go" aria-hidden="true">→</span>
       </a>"""
 
 
 def skipped_card(tool_id: str, reason: str) -> str:
     return f"""
       <div class="card card--disabled">
-        <div class="card-icon card-icon--fallback">?</div>
+        <div class="plate"><span class="card-icon card-icon--fallback">?</span></div>
         <div class="card-body">
           <h2>{esc(tool_id)}</h2>
-          <p class="card-blurb">Ta wersja narzędzia nie ma jeszcze kompilacji webowej.</p>
+          <p class="card-blurb">{esc(reason or 'Ta wersja nie ma jeszcze kompilacji webowej.')}</p>
           <p class="card-meta"><span class="badge badge--muted">pominięte</span></p>
         </div>
       </div>"""
@@ -91,15 +121,21 @@ def skipped_card(tool_id: str, reason: str) -> str:
 
 def build_tool_pages(site_dir: Path, out_dir: Path, manifest: Dict[str, Any]) -> None:
     template = (site_dir / "tool.template.html").read_text(encoding="utf-8")
+    base = "../../"
     for tool_id, info in (manifest.get("tools") or {}).items():
+        app_path = local_path(base, info.get("app_path") or f"/apps/{tool_id}/")
+        if app_path and not app_path.endswith("/"):
+            app_path += "/"
         context = {
+            "BASE": base,
+            "TOOL_ICON_HTML": icon_html(info, base, "bar-icon", "bar-icon--fallback"),
             "SITE_TITLE": SITE_TITLE,
             "TOOL_ID": esc(tool_id),
             "TOOL_LABEL": esc(info.get("label") or tool_id),
             "TOOL_VERSION": esc(info.get("version") or "?"),
             "TOOL_BLURB": esc(info.get("blurb") or ""),
             "TOOL_PAGE_URL": esc(info.get("page") or ""),
-            "TOOL_APP_PATH": esc(info.get("app_path") or f"/apps/{tool_id}/"),
+            "TOOL_APP_PATH": esc(app_path),
             "TOOL_TAG": esc(info.get("tag") or ""),
         }
         target = out_dir / "tool" / tool_id / "index.html"
@@ -157,10 +193,11 @@ def main() -> int:
             cards.append(tool_card(tool_id, info))
 
     hub_context = {
+        "BASE": "",
         "SITE_TITLE": SITE_TITLE,
         "SITE_TAGLINE": esc(SITE_TAGLINE),
         "LAST_SYNC": esc(format_time(manifest.get("generated_at") or "")),
-        "TOOL_COUNT": str(len(tools)),
+        "TOOL_COUNT": plural_tools(len(tools)),
     }
     hub_template = (site_dir / "hub.template.html").read_text(encoding="utf-8")
     (out_dir / "index.html").write_text(
@@ -192,6 +229,7 @@ def main() -> int:
     }
     admin_template = (site_dir / "admin.template.html").read_text(encoding="utf-8")
     admin_context = {
+        "BASE": "../",
         "SITE_TITLE": SITE_TITLE,
         "CONFIG_JSON": json.dumps(admin_config, ensure_ascii=False).replace("</", "<\\/"),
         "LAST_SYNC": esc(format_time(manifest.get("generated_at") or "")),
@@ -204,7 +242,9 @@ def main() -> int:
     assets_src = site_dir / "assets"
     if assets_src.exists():
         shutil.copytree(assets_src, out_dir / "assets", dirs_exist_ok=True)
-    (out_dir / "robots.txt").write_text(ROBOTS, encoding="utf-8")
+    repo = detect_repository()
+    prefix = f"/{repo.split('/')[1]}/" if "/" in repo else "/"
+    (out_dir / "robots.txt").write_text(ROBOTS.format(prefix=prefix), encoding="utf-8")
     (out_dir / ".nojekyll").write_text("", encoding="utf-8")
 
     print(f"zbudowano witrynę: {len(tools)} narzędzi, {len(skipped)} pominiętych -> {out_dir}")

@@ -70,10 +70,10 @@
       "</tbody></table>";
   }
 
-  // Wersje wdrożone czytamy na żywo z /manifest.json (zawsze aktualne),
+  // Wersje wdrożone czytamy na żywo z manifest.json (zawsze aktualne),
   // a gdy pliku nie ma - z konfiguracji osadzonej w stronie.
   function loadDeployed() {
-    return fetch("/manifest.json", { cache: "no-cache" })
+    return fetch("../manifest.json", { cache: "no-cache" })
       .then(function (response) {
         return response.ok ? response.json() : null;
       })

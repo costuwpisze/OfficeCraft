@@ -5,51 +5,63 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Administracja · {{SITE_TITLE}}</title>
 <meta name="robots" content="noindex, nofollow">
-<link rel="stylesheet" href="/assets/base.css">
-<link rel="stylesheet" href="/assets/admin.css">
+<link rel="stylesheet" href="{{BASE}}assets/base.css">
+<link rel="stylesheet" href="{{BASE}}assets/admin.css">
 </head>
-<body class="admin-body">
-<main class="wrap">
-  <header class="hero hero--small">
-    <h1 class="hero-title">Administracja</h1>
-    <p class="hero-tagline">Strona jest ukryta - nie jest linkowana z huba i jest wykluczona z indeksowania.</p>
+<body>
+<main class="wrap wrap--narrow">
+  <header class="admin-head">
+    <p class="eyebrow">Administracja</p>
+    <h1 class="admin-title">Aktualizacje</h1>
+    <p class="lede">Strona ukryta — nie jest linkowana z huba i jest wykluczona z indeksowania.</p>
   </header>
 
   <section class="panel">
-    <h2>Wdrożone wersje</h2>
+    <div class="panel-head">
+      <h2>Wdrożone wersje</h2>
+      <span class="muted" id="sync-stamp">ostatnia synchronizacja: {{LAST_SYNC}}</span>
+    </div>
     <div id="status" class="status">Wczytywanie…</div>
-    <p class="muted">Ostatnia synchronizacja: {{LAST_SYNC}}</p>
   </section>
 
   <section class="panel">
-    <h2>Uruchom aktualizację</h2>
-    <p class="muted">Aktualizacja pobiera tylko te narzędzia, których wersja się zmieniła. Jeśli wszystko jest aktualne, nic nie zostanie pobrane ani wdrożone.</p>
+    <div class="panel-head">
+      <h2>Uruchom aktualizację</h2>
+    </div>
+    <p class="muted">Pobierane są tylko narzędzia, których wersja się zmieniła. Jeśli wszystko jest aktualne, nic nie zostanie pobrane ani wdrożone.</p>
 
     <div class="row">
-      <a class="btn btn--primary" id="github-run" href="#" target="_blank" rel="noopener">Uruchom przez GitHub (zalecane)</a>
-      <span class="muted">Otworzy się GitHub Actions - zaloguj się i kliknij <em>Run workflow</em>.</span>
+      <a class="btn btn--primary" id="github-run" href="#" target="_blank" rel="noopener">Uruchom przez GitHub</a>
+      <span class="muted muted--inline">Otworzy Actions — zaloguj się i kliknij <em>Run workflow</em>.</span>
     </div>
 
     <details class="details">
-      <summary>Uruchom tokenem (PAT) zamiast logowania do GitHuba</summary>
-      <p class="muted">Token to „hasło do API GitHuba". Wklej token z uprawnieniem <em>Actions: Read and write</em> tylko dla repozytorium {{SITE_TITLE}}. Token zostaje w tej karcie przeglądarki (sessionStorage) i jest wysyłany wyłącznie do api.github.com.</p>
-      <form id="pat-form" autocomplete="off">
-        <input type="password" id="pat" placeholder="ghp_… albo github_pat_…" spellcheck="false">
-        <button class="btn" type="submit">Sprawdź i uruchom</button>
+      <summary>Uruchom tokenem (PAT)</summary>
+      <p class="muted">Token to „hasło do API GitHuba”. Wklej token z uprawnieniem <em>Actions: Read and write</em> dla repozytorium {{SITE_TITLE}}. Zostaje w tej karcie (sessionStorage) i jest wysyłany wyłącznie do api.github.com.</p>
+      <form id="pat-form" class="pat-form" autocomplete="off">
+        <input type="password" id="pat" placeholder="github_pat_…" spellcheck="false" aria-label="Personal Access Token">
+        <button class="btn" type="submit">Uruchom</button>
       </form>
-      <p class="muted">Krok po kroku: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Generate new token → Repository access: tylko OfficeCraft → Permissions → Actions: Read and write.</p>
+      <p class="muted muted--tiny">GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → Repository access: tylko {{SITE_TITLE}} → Actions: Read and write (+ Contents i Workflows do <code>git push</code>).</p>
     </details>
 
     <div id="log" class="log" hidden></div>
   </section>
 
   <section class="panel">
-    <h2>Lista narzędzi</h2>
-    <div id="tools" class="status">…</div>
+    <div class="panel-head">
+      <h2>Lista narzędzi</h2>
+    </div>
+    <div id="tools" class="status status--list">…</div>
   </section>
+
+  <footer class="foot">
+    <p>{{SITE_TITLE}}</p>
+    <p><a class="link" href="{{BASE}}">Strona główna</a></p>
+  </footer>
 </main>
 
 <script id="officecraft-config" type="application/json">{{CONFIG_JSON}}</script>
-<script src="/assets/admin.js"></script>
+<script src="{{BASE}}assets/admin.js"></script>
 </body>
 </html>

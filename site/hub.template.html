@@ -6,18 +6,21 @@
 <title>{{SITE_TITLE}}</title>
 <meta name="description" content="{{SITE_TAGLINE}}">
 <meta name="robots" content="index, follow">
-<link rel="stylesheet" href="/assets/base.css">
-<link rel="stylesheet" href="/assets/hub.css">
+<meta name="theme-color" content="#fbfbfd" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0d0f13" media="(prefers-color-scheme: dark)">
+<link rel="stylesheet" href="{{BASE}}assets/base.css">
+<link rel="stylesheet" href="{{BASE}}assets/hub.css">
 </head>
 <body>
 <main class="wrap">
-  <header class="hero">
-    <h1 class="hero-title">{{SITE_TITLE}}</h1>
-    <p class="hero-tagline">{{SITE_TAGLINE}}</p>
-    <p class="hero-meta">
-      <span class="badge badge--muted">{{TOOL_COUNT}} narzędzi</span>
+  <header>
+    <p class="eyebrow">{{SITE_TITLE}}</p>
+    <h1 class="headline">Narzędzia, które<br>działają w przeglądarce.</h1>
+    <p class="lede">{{SITE_TAGLINE}}</p>
+    <p class="meta-line">
+      <span>{{TOOL_COUNT}}</span>
       <span class="dot">·</span>
-      <span>ostatnia synchronizacja: {{LAST_SYNC}}</span>
+      <span>aktualizacja {{LAST_SYNC}}</span>
     </p>
   </header>
 
@@ -26,8 +29,8 @@
   </section>
 
   <footer class="foot">
-    <p>Każde narzędzie działa w przeglądarce (WebAssembly). Pliki, które otwierasz, nie opuszczają Twojego komputera.</p>
-    <p class="foot-small">Wersje narzędzi pobierane są automatycznie z wydań GitHuba. Strona nie gromadzi danych i nie używa plików cookie.</p>
+    <p>Nic nie jest wysyłane na serwer — pliki zostają na Twoim komputerze.</p>
+    <p>Wersje pochodzą z wydań GitHub. Bez kont, bez plików cookie.</p>
   </footer>
 </main>
 </body>
