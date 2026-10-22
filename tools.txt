@@ -2,7 +2,11 @@
 #
 # Jedno narzędzie = jeden akapit (blok rozdzielony pustą linią):
 #   * pierwsza linia  - link do repozytorium GitHub
-#   * kolejne linie   - opcjonalny opis (może być zapisany wieloma wierszami)
+#   * kolejne linie   - opcjonalny opis (może być zapisany wieloma wierszami,
+#                       wspierana jest kursywa markdown: *tekst*)
+#
+# WAŻNE: każdy blok MUSI kończyć się pustą linią. Jeśli brakuje pustej linii,
+# następny link zostanie potraktowany jako dalsza część opisu poprzedniego narzędzia.
 #
 # Wszystko poza linkiem i opisem jest wykrywane automatycznie z API GitHuba:
 # nazwa, wersja (zawsze stable), ikona, link do projektu, plik do pobrania.
@@ -21,32 +25,32 @@
 
 https://github.com/storytold/pdfcraft
 Czytaj, edytuj, podpisuj i zabezpieczaj pliki PDF
-github.com/storytold/pdfcraft
+*github.com/storytold/pdfcraft*
 
 https://github.com/storytold/wordcraft
 Twórz, formatuj i edytuj dokumenty tekstowe
-github.com/storytold/wordcraft
+*github.com/storytold/wordcraft*
 
 https://github.com/storytold/gridcraft
 Obliczaj, analizuj i wizualizuj dane w arkuszach kalkulacyjnych
-github.com/storytold/gridcraft
+*github.com/storytold/gridcraft*
 
 https://github.com/storytold/cadcraft
 Rysowanie 2D i 3D: warstwy, wymiary, kresowanie, DXF
-github.com/storytold/cadcraft
+*github.com/storytold/cadcraft*
 
 https://github.com/tangency-labs/solidcraft
 Parametryczne modelowanie 3D
-github.com/tangency-labs/solidcraft
+*github.com/tangency-labs/solidcraft*
 
 https://github.com/storytold/deckcraft
 Projektuj, animuj i prezentuj slajdy w pokazach multimedialnych
-github.com/storytold/deckcraft
+*github.com/storytold/deckcraft*
 
 https://github.com/storytold/vectorcraft
 Twórz grafikę wektorową: ścieżki, kształty, ilustracje, SVG i EPS
-github.com/storytold/vectorcraft
+*github.com/storytold/vectorcraft*
 
 https://github.com/storytold/lightcraft
 Kataloguj, przetwarzaj i poprawiaj zdjęcia oraz pliki RAW
-github.com/storytold/lightcraft
+*github.com/storytold/lightcraft*

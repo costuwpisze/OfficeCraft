@@ -2,7 +2,11 @@
 #
 # Jedno narzędzie = jeden akapit (blok rozdzielony pustą linią):
 #   * pierwsza linia  - link do repozytorium GitHub
-#   * kolejne linie   - opcjonalny opis (może być zapisany wieloma wierszami)
+#   * kolejne linie   - opcjonalny opis (może być zapisany wieloma wierszami,
+#                       wspierana jest kursywa markdown: *tekst*)
+#
+# WAŻNE: każdy blok MUSI kończyć się pustą linią. Jeśli brakuje pustej linii,
+# następny link zostanie potraktowany jako dalsza część opisu poprzedniego narzędzia.
 #
 # Wszystko poza linkiem i opisem jest wykrywane automatycznie z API GitHuba:
 # nazwa, wersja (zawsze stable), ikona, link do projektu, plik do pobrania.

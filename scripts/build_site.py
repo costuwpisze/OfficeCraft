@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from common import REPO_ROOT, esc, parse_config, read_manifest, render  # noqa: E402
+from common import REPO_ROOT, esc, format_blurb, parse_config, read_manifest, render  # noqa: E402
 
 SITE_TITLE = "OfficeCraft"
 SITE_TAGLINE = "Narzędzia biurowe oraz CAD - wszystko działa w Twojej przeglądarce."
@@ -113,7 +113,7 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
         <div class="plate">{plate}</div>
         <div class="card-body">
           <h2>{esc(info.get('label') or tool_id)}</h2>
-          <p class="card-blurb">{esc(blurb)}</p>
+          <p class="card-blurb">{format_blurb(blurb)}</p>
           <p class="card-meta">
             <span class="badge">v{esc(info.get('version') or '?')}</span>
             <span>{esc(size)}</span>

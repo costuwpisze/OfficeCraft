@@ -350,7 +350,9 @@ def main() -> int:
         build_dir = out_dir / "apps" / tool_id
         icon_target = out_dir / "assets" / "icons" / f"{tool_id}.png"
         known = previous_versions.get(tool_id)
-        if known == version and not args.force and not args.dry_run and build_present(build_dir):
+        previous_blurb = previous_tools.get(tool_id, {}).get("blurb", "")
+        new_blurb = tool["overrides"].get("blurb") or tool.get("blurb") or ""
+        if known == version and not args.force and not args.dry_run and build_present(build_dir) and previous_blurb == new_blurb:
             print(f"  · {version} już wdrożone - bez zmian")
             icon_before = icon_target.exists()
             icon = find_icon(tool, build_dir, out_dir) or previous_tools.get(tool_id, {}).get("icon")

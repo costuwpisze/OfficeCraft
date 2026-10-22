@@ -25,6 +25,16 @@ def esc(value: Any) -> str:
     return html.escape(str(value), quote=True)
 
 
+_ITALIC_RE = re.compile(r"\*([^\*\n]+)\*")
+
+
+def format_blurb(value: str) -> str:
+    """Eskapuje opis, zamienia *kursywę* na <em>kursywę</em> i nowe linie na <br>."""
+    text = esc(value)
+    text = _ITALIC_RE.sub(r"<em>\1</em>", text)
+    return text.replace("\n", "<br>")
+
+
 def parse_config(path: Path) -> List[Dict[str, Any]]:
     """Czyta plik konfiguracyjny narzędzi.
 
