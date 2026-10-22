@@ -2,6 +2,15 @@
 
 .admin-head { margin-bottom: 32px; }
 
+.head-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
 .admin-title {
   margin: 0 0 12px;
   font-size: clamp(1.9rem, 4.6vw, 2.6rem);
