@@ -25,32 +25,24 @@
 
 https://github.com/storytold/pdfcraft
 Czytaj, edytuj, podpisuj i zabezpieczaj pliki PDF
-*github.com/storytold/pdfcraft*
 
 https://github.com/storytold/wordcraft
 Twórz, formatuj i edytuj dokumenty tekstowe
-*github.com/storytold/wordcraft*
 
 https://github.com/storytold/gridcraft
 Obliczaj, analizuj i wizualizuj dane w arkuszach kalkulacyjnych
-*github.com/storytold/gridcraft*
 
 https://github.com/storytold/cadcraft
 Rysowanie 2D i 3D: warstwy, wymiary, kresowanie, DXF
-*github.com/storytold/cadcraft*
 
 https://github.com/tangency-labs/solidcraft
 Parametryczne modelowanie 3D
-*github.com/tangency-labs/solidcraft*
 
 https://github.com/storytold/deckcraft
 Projektuj, animuj i prezentuj slajdy w pokazach multimedialnych
-*github.com/storytold/deckcraft*
 
 https://github.com/storytold/vectorcraft
 Twórz grafikę wektorową: ścieżki, kształty, ilustracje, SVG i EPS
-*github.com/storytold/vectorcraft*
 
 https://github.com/storytold/lightcraft
 Kataloguj, przetwarzaj i poprawiaj zdjęcia oraz pliki RAW
-*github.com/storytold/lightcraft*

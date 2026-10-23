@@ -18,8 +18,8 @@
   position: relative;
   display: grid;
   grid-template-columns: 86px 1fr;
-  grid-template-rows: 86px minmax(72px, auto) auto;
-  gap: 12px 18px;
+  grid-template-rows: 86px 3.7rem auto;
+  gap: 10px 18px;
   align-items: center;
   padding: 22px;
   background: var(--surface);
@@ -102,13 +102,32 @@ a.card:hover .plate {
   font-size: 0.82rem;
   line-height: 1.5;
   white-space: pre-line;
-  height: 72px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.card-meta {
+.card-foot {
   grid-column: 1 / span 2;
   grid-row: 3;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.card-repo {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-meta {
   margin: 0;
   display: flex;
   align-items: center;
@@ -125,9 +144,7 @@ a.card:hover .plate {
 
 @media (max-width: 420px) {
   .grid { grid-template-columns: 1fr; }
-  .card { flex-direction: row; align-items: center; gap: 16px; padding: 18px; }
-  .plate { width: 68px; height: 68px; border-radius: 19px; flex: 0 0 auto; }
+  .card { grid-template-columns: 68px 1fr; grid-template-rows: 68px 3.7rem auto; gap: 10px 14px; padding: 18px; }
+  .plate { width: 68px; height: 68px; border-radius: 19px; }
   .card-icon { width: 44px; height: 44px; }
-  .card-blurb { -webkit-line-clamp: 2; }
-  .card-meta { margin-top: 6px; }
 }

@@ -152,6 +152,38 @@ def find_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) ->
     return None
 
 
+def pwa_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) -> Optional[str]:
+    """Ikona 512 px do manifestu PWA, trzymana lokalnie (bez hotlinku)."""
+    tool_id = tool["id"]
+    rel = f"/assets/icons/{tool_id}-512.png"
+    target = out_dir / "assets" / "icons" / f"{tool_id}-512.png"
+    if target.is_file() and target.stat().st_size > 0:
+        return rel
+
+    if build_dir and build_dir.is_dir():
+        for pattern in ("icons/512x512/*.png", "**/512x512/*.png"):
+            found = sorted(build_dir.glob(pattern))
+            if found:
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(found[0], target)
+                return rel
+
+    owner, repo = tool["owner"], tool["repo"]
+    for url in (
+        f"{RAW}/{owner}/{repo}/main/assets/app-icon/hicolor/512x512/apps/ai.storyteller.{tool_id}.png",
+        f"{RAW}/{owner}/{repo}/main/assets/icons/app/linux/exports/hicolor/512x512/apps/ai.storyteller.{tool_id}.png",
+    ):
+        try:
+            data = http_get(url, timeout=30)
+        except Exception:  # noqa: BLE001
+            continue
+        if len(data) > 1000:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(data)
+            return rel
+    return None
+
+
 # ---------------------------------------------------------------- pobieranie
 
 
@@ -356,7 +388,11 @@ def main() -> int:
             print(f"  · {version} już wdrożone - bez zmian")
             icon_before = icon_target.exists()
             icon = find_icon(tool, build_dir, out_dir) or previous_tools.get(tool_id, {}).get("icon")
-            manifest_tools[tool_id] = {**previous_tools[tool_id], "icon": icon}
+            manifest_tools[tool_id] = {
+                **previous_tools[tool_id],
+                "icon": icon,
+                "pwa_icon": pwa_icon(tool, build_dir, out_dir),
+            }
             if not icon_before and icon_target.exists():
                 changed = True
             continue
@@ -396,6 +432,7 @@ def main() -> int:
         manifest_tools[tool_id] = build_entry(
             tool, release, asset, info, icon, files, total_size
         )
+        manifest_tools[tool_id]["pwa_icon"] = pwa_icon(tool, build_dir, out_dir)
         changed = True
         print(f"  ✓ zaktualizowano: {files} plików, {round(total_size / 1e6, 1)} MB")
 

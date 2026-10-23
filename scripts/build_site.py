@@ -24,6 +24,7 @@ from typing import Any, Dict, List
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from common import REPO_ROOT, esc, format_blurb, parse_config, read_manifest, render  # noqa: E402
+from pwa import prepare_apps  # noqa: E402
 
 SITE_TITLE = "OfficeCraft"
 SITE_TAGLINE = "Narzędzia biurowe oraz CAD - wszystko działa w Twojej przeglądarce."
@@ -108,16 +109,22 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
 
     blurb = info.get("blurb") or ""
     size = human_size(info.get("bytes") or 0)
+    repo = (info.get("repo") or "").strip().removeprefix("https://").removeprefix("http://")
+    repo = repo.removeprefix("github.com/")
+    repo_text = f"github.com/{repo}" if repo else ""
     return f"""
       <a class="card" href="{esc(base)}tool/{esc(tool_id)}/">
         <div class="plate">{plate}</div>
         <div class="card-body">
           <h2>{esc(info.get('label') or tool_id)}</h2>
           <p class="card-blurb">{format_blurb(blurb)}</p>
-          <p class="card-meta">
-            <span class="badge">v{esc(info.get('version') or '?')}</span>
-            <span>{esc(size)}</span>
-          </p>
+          <div class="card-foot">
+            <span class="card-repo">{esc(repo_text)}</span>
+            <p class="card-meta">
+              <span class="badge">v{esc(info.get('version') or '?')}</span>
+              <span>{esc(size)}</span>
+            </p>
+          </div>
         </div>
       </a>"""
 
@@ -224,6 +231,7 @@ def main() -> int:
 
     # --- podstrony narzędzi
     build_tool_pages(site_dir, out_dir, manifest)
+    prepare_apps(out_dir / "apps", tools)
 
     # --- strona admina
     admin_config = {

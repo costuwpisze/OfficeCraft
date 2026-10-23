@@ -88,6 +88,21 @@ przebieg kończy się komunikatem `DEPLOY: niepotrzebny - bez zmian`, a akcja po
 Wymuszenie ponownego pobrania (np. gdyby plik się uszkodził): akcja → **Run workflow** →
 zaznacz `force`.
 
+### Instalacja jako aplikacja (PWA) i otwieranie plików
+
+Każdy build w `apps/<id>/` dostaje przy każdym wdrożeniu `manifest.webmanifest` (nazwa, ikony
+192/512, `display: standalone`) oraz `file_handlers` - listę rozszerzeń, które dana aplikacja
+obsługuje. Dzięki temu po zainstalowaniu w Edge/Chrome ("Zainstaluj aplikację") system
+rejestruje ją jako program do tych plików i dwuklik otwiera je w aplikacji.
+
+Dopisywanie odbywa się w `scripts/build_site.py` (funkcja `prepare_apps`), więc po każdej
+nowej wersji rozpakowanej z ZIP-a manifest i skrypt są tworzone od nowa. Rozszerzenia są
+zdefiniowane w `scripts/pwa.py` (`FILE_TYPES`); własny manifest narzędzia (np. SolidCraft)
+jest zachowywany, a tylko uzupełniany.
+
+Plik z systemu trafia do aplikacji przez File Handling API (`launchQueue`); dołączany
+`officecraft-pwa.js` podaje go aplikacji jako przeciągnięcie pliku na kanwę.
+
 ---
 
 ## 3. Wdrożenie (jednorazowo)
@@ -101,10 +116,42 @@ zaznacz `force`.
    `scripts/`, `tools.txt` lub samego workflow. Pierwszy przebieg pobierze ~45 MB
    i wgra ~115 MB na Pages; trwa 3–5 minut. Kolejne korzystają z cache buildów.
 
-Adres strony: `https://<twoj-nick>.github.io/OfficeCraft/`
+Adres strony: `https://<twoj-nick>.github.io/<nazwa-repo>/` (przy repo `OfficeCraft`:
+`https://<twoj-nick>.github.io/OfficeCraft/`).
 
 Strona `/admin/` nie jest nigdzie linkowana i jest wykluczona z indeksowania
 (`robots.txt` + `noindex`).
+
+### Fork - własna kopia na Twoim koncie
+
+1. Na GitHubie otwórz repozytorium i kliknij **Fork → Create fork**. Nazwa może zostać
+   `OfficeCraft` (najprościej) - inna też zadziała, bo adresy stron i akcji są liczone
+   z repozytorium, w którym działają.
+2. W swoim forku wejdź w **Actions**. Jeśli pojawi się komunikat, że workflowy są wyłączone,
+   kliknij **I understand my workflows, go ahead and enable them**.
+3. **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+4. W **Actions → Sync tools** kliknij **Enable workflow**. W forku harmonogram (cron) jest
+   domyślnie wyłączony - bez tego kroku codzienna synchronizacja nie ruszy (ręczne
+   **Run workflow** działa od razu).
+5. Wypchnij zmianę na `main` albo uruchom **Run workflow** - pierwszy przebieg pobierze
+   buildy i wdroży stronę.
+
+Ważne przy forku:
+
+- Repozytorium musi być **publiczne** - GitHub Pages dla prywatnych wymaga planu Pro.
+- Workflow zakłada gałąź `main`. Jeśli Twój fork ma inną, popraw `branches: [main]`
+  i `GITHUB_REF_NAME` w `.github/workflows/sync-tools.yml`.
+- Własna domena: ustaw zmienną repozytorium `SITE_URL` (**Settings → Secrets and variables →
+  Actions → Variables**) na pełny adres, np. `https://office.example.com/`. Bez niej adres
+  jest brany z `GITHUB_REPOSITORY`.
+- Token z sekcji 4 twórz dla **swojego** forka (`Only select repositories` → Twoja kopia).
+- Aby brać aktualizacje z oryginału:
+
+  ```bash
+  git remote add upstream https://github.com/costuwpisze/OfficeCraft.git
+  git fetch upstream
+  git merge upstream/main
+  ```
 
 ---
 
@@ -113,7 +160,7 @@ Strona `/admin/` nie jest nigdzie linkowana i jest wykluczona z indeksowania
 Dwa sposoby uruchomienia synchronizacji:
 
 **A. Przez GitHub (bez tokenów)** - przycisk *Uruchom przez GitHub* otwiera
-`github.com/<owner>/OfficeCraft/actions/workflows/sync-tools.yml`, gdzie logujesz się
+`github.com/<owner>/<nazwa-repo>/actions/workflows/sync-tools.yml`, gdzie logujesz się
 normalnie do GitHuba i klikasz **Run workflow**.
 
 **B. Tokenem (PAT)** - *Personal Access Token* to „hasło do API GitHuba": długi ciąg znaków,
@@ -124,7 +171,7 @@ Personal access tokens → Fine-grained tokens → Generate new token**:
 - nazwa: `OfficeCraft`
 - ważność: 90 dni (lub dłużej)
 - **Resource owner:** Twoje konto
-- **Repository access: Only select repositories → OfficeCraft**
+- **Repository access: Only select repositories → Twoja kopia** (np. `OfficeCraft`)
 - **Repository permissions:**
   | Uprawnienie | Poziom | Po co |
   |---|---|---|
@@ -139,7 +186,7 @@ wdrażanie na strony robi sam workflow na automatycznym `GITHUB_TOKEN`.
 Sprawdzenie tokenta:
 
 ```bash
-curl -s -H "Authorization: Bearer TWOJ_TOKEN" https://api.github.com/repos/TWOJ-NICK/OfficeCraft | head -3
+curl -s -H "Authorization: Bearer TWOJ_TOKEN" https://api.github.com/repos/TWOJ-NICK/NAZWA-REPO | head -3
 ```
 
 Przy `git push` po HTTPS: login = Twój nick, hasło = token (GitHub nie przyjmuje hasła konta).
@@ -204,6 +251,7 @@ scripts/
   common.py                    wspólne: parser konfiguracji, szablony, manifest
   sync_tools.py                sprawdzanie wersji, pobieranie, rozpakowywanie
   build_site.py                składanie witryny
+  pwa.py                       manifest PWA + otwieranie plików z systemu
 .github/workflows/
   sync-tools.yml               cron + ręczne uruchomienie + wdrożenie na Pages
 ```

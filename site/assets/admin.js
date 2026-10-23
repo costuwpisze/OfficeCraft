@@ -59,9 +59,11 @@
         escapeHtml(t.version || "?") +
         '</td><td><span class="status-cell" data-repo="' +
         escapeHtml(t.repo) +
-        '">sprawdzam…</span></td><td><a href="' +
-        escapeHtml(t.page || "#") +
-        '" target="_blank" rel="noopener">projekt ↗</a></td></tr>'
+        '">sprawdzam…</span></td><td><a class="repo-btn" href="' +
+        escapeHtml("https://github.com/" + t.repo) +
+        '" target="_blank" rel="noopener">' +
+        escapeHtml("github.com/" + t.repo) +
+        "</a></td></tr>"
       );
     });
     host.innerHTML =
