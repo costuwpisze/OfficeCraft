@@ -41,6 +41,19 @@
     });
   }
 
+  function humanSize(bytes) {
+    var value = Number(bytes) || 0;
+    var units = ["B", "KB", "MB", "GB"];
+    for (var i = 0; i < units.length; i++) {
+      if (value < 1000 || i === units.length - 1) {
+        var text = i === 0 ? String(Math.round(value)) : value.toFixed(1).replace(".", ",");
+        return text + " " + units[i];
+      }
+      value /= 1000;
+    }
+    return "0 B";
+  }
+
   // ---------------------------------------------------------------- status
 
   function renderStatus(tools) {
@@ -59,7 +72,9 @@
         escapeHtml(t.version || "?") +
         '</td><td><span class="status-cell" data-repo="' +
         escapeHtml(t.repo) +
-        '">sprawdzam…</span></td><td><a class="repo-btn" href="' +
+        '">sprawdzam…</span></td><td class="num">' +
+        escapeHtml(humanSize(t.bytes)) +
+        '</td><td><a class="repo-btn" href="' +
         escapeHtml("https://github.com/" + t.repo) +
         '" target="_blank" rel="noopener">' +
         escapeHtml("github.com/" + t.repo) +
@@ -67,7 +82,7 @@
       );
     });
     host.innerHTML =
-      "<table><thead><tr><th>Narzędzie</th><th>Wdrożone</th><th>Na GitHubie</th><th></th></tr></thead><tbody>" +
+      "<table><thead><tr><th>Narzędzie</th><th>Wdrożone</th><th>Na GitHubie</th><th>Rozmiar</th><th></th></tr></thead><tbody>" +
       rows.join("") +
       "</tbody></table>";
   }
@@ -88,7 +103,8 @@
               label: entry.label,
               version: entry.version,
               repo: entry.repo,
-              page: entry.page
+              page: entry.page,
+              bytes: entry.bytes
             };
           });
           return tools;

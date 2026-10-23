@@ -128,11 +128,6 @@
 
 .stage-hint.is-hidden { opacity: 0; }
 
-.bezpaska { overflow: hidden; }
-.bezpaska .bar { display: none; }
-.bezpaska .stage { padding: 0; }
-.bezpaska .stage-hint { inset: 0; border-radius: 0; }
-
 .spinner {
   width: 15px;
   height: 15px;

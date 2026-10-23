@@ -19,7 +19,7 @@
     <span class="badge">v{{TOOL_VERSION}}</span>
     <span class="bar-spacer"></span>
     <a class="bar-btn" href="{{TOOL_APP_PATH}}index.html" target="_blank" rel="noopener">Nowa karta</a>
-    <button class="bar-btn" type="button" id="standalone">Strona bez górnego paska</button>
+    <a class="bar-btn" href="{{TOOL_APP_PATH}}?install=1" target="_blank" rel="noopener">Zainstaluj jako aplikację</a>
     <button class="bar-btn" type="button" id="fullscreen">Pełny ekran</button>
     <a class="bar-btn bar-btn--ghost" href="{{TOOL_PAGE_URL}}" target="_blank" rel="noopener">{{TOOL_PAGE_LABEL}} ↗</a>
   </header>
@@ -37,19 +37,11 @@
   var frame = document.getElementById('app');
   var hint = document.getElementById('hint');
   frame.addEventListener('load', function () { hint.classList.add('is-hidden'); });
-  document.getElementById('standalone').addEventListener('click', function () {
-    var url = window.location.origin + window.location.pathname + '?bezpaska=1';
-    window.open(url, '_blank', 'noopener');
-  });
   document.getElementById('fullscreen').addEventListener('click', function () {
     if (document.fullscreenElement) { document.exitFullscreen(); return; }
     var target = document.querySelector('.stage');
     if (target.requestFullscreen) { target.requestFullscreen(); }
   });
-  var params = new URLSearchParams(window.location.search);
-  if (params.has('bezpaska')) {
-    document.body.classList.add('bezpaska');
-  }
 </script>
 </body>
 </html>

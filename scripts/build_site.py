@@ -121,7 +121,7 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
           <div class="card-foot">
             <p class="card-meta">
               <span class="badge">v{esc(info.get('version') or '?')}</span>
-              <span>{esc(size)} | {esc(repo_text)}</span>
+              <span> {esc(repo_text)}</span>
             </p>
           </div>
         </div>
@@ -243,6 +243,7 @@ def main() -> int:
                 "version": info.get("version"),
                 "repo": info.get("repo"),
                 "page": info.get("page"),
+                "bytes": info.get("bytes") or 0,
             }
             for tool_id, info in tools.items()
         },

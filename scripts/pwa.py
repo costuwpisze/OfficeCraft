@@ -158,6 +158,75 @@ SCRIPT = """\
     });
   }
 })();
+
+/* OfficeCraft: instalacja jako aplikacja. Strona otwarta z przyciskiem
+   "Zainstaluj jako aplikacje" (?install=1) pokazuje panel z przyciskiem,
+   ktory wywoluje systemowy dialog instalacji PWA. */
+(function () {
+  var params;
+  try { params = new URLSearchParams(location.search); } catch (err) { return; }
+  if (!params.has("install")) return;
+
+  var deferred = null;
+  var panel = null;
+  var button = null;
+  var note = null;
+
+  function close() {
+    if (!panel) return;
+    panel.parentNode.removeChild(panel);
+    panel = null;
+  }
+
+  function open() {
+    if (panel) return;
+    panel = document.createElement("div");
+    panel.id = "officecraft-install";
+    panel.style.cssText = "position:fixed;right:20px;bottom:20px;z-index:2147483647;"
+      + "display:flex;gap:12px;align-items:center;max-width:calc(100vw - 40px);"
+      + "padding:12px 14px;border:1px solid rgba(255,255,255,.18);border-radius:14px;"
+      + "background:#24262b;color:#eef1f6;font:14px/1.35 system-ui,sans-serif;"
+      + "box-shadow:0 12px 32px rgba(0,0,0,.45)";
+    note = document.createElement("span");
+    note.textContent = "Zainstaluj " + document.title.split(" - ")[0] + " na komputerze.";
+    button = document.createElement("button");
+    button.type = "button";
+    button.textContent = "Zainstaluj";
+    button.style.cssText = "flex:none;padding:9px 14px;border:0;border-radius:9px;"
+      + "background:#3b82f6;color:#fff;font:600 14px system-ui,sans-serif;cursor:pointer";
+    button.addEventListener("click", function () {
+      if (!deferred) return;
+      var prompt = deferred;
+      deferred = null;
+      prompt.prompt();
+      prompt.userChoice.then(close);
+    });
+    button.disabled = !deferred;
+    panel.appendChild(note);
+    panel.appendChild(button);
+    document.body.appendChild(panel);
+    if (!deferred) {
+      setTimeout(function () {
+        if (deferred) return;
+        button.disabled = true;
+        note.textContent = "Uzyj menu przegladarki: Zainstaluj...";
+      }, 4000);
+    }
+  }
+
+  window.addEventListener("beforeinstallprompt", function (event) {
+    event.preventDefault();
+    deferred = event;
+    close();
+    open();
+  });
+  window.addEventListener("appinstalled", close);
+
+  if (document.body) open();
+  else window.addEventListener("DOMContentLoaded", open);
+
+  try { history.replaceState(null, "", location.pathname + location.hash); } catch (err) {}
+})();
 """
 
 

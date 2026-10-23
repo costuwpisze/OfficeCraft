@@ -103,6 +103,11 @@ jest zachowywany, a tylko uzupełniany.
 Plik z systemu trafia do aplikacji przez File Handling API (`launchQueue`); dołączany
 `officecraft-pwa.js` podaje go aplikacji jako przeciągnięcie pliku na kanwę.
 
+Ten sam skrypt obsługuje przycisk **„Zainstaluj jako aplikację"** na stronie narzędzia:
+otwiera on `apps/<id>/?install=1`, gdzie pojawia się panel z przyciskiem wywołującym
+systemowy dialog instalacji (PWA instaluje się tylko ze strony najwyższego poziomu,
+nie z iframe podglądu).
+
 ---
 
 ## 3. Wdrożenie (jednorazowo)
