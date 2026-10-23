@@ -119,10 +119,9 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
           <h2>{esc(info.get('label') or tool_id)}</h2>
           <p class="card-blurb">{format_blurb(blurb)}</p>
           <div class="card-foot">
-            <span class="card-repo">{esc(repo_text)}</span>
             <p class="card-meta">
               <span class="badge">v{esc(info.get('version') or '?')}</span>
-              <span>{esc(size)}</span>
+              <span>{esc(size)} | {esc(repo_text)}</span>
             </p>
           </div>
         </div>
