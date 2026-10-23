@@ -55,7 +55,7 @@ https://github.com/storytold/xyz | label=XYZ | page=https://… | icon=https://�
 | `id` | identyfikator w adresach (domyślnie nazwa repozytorium) |
 | `label` | nazwa na stronie |
 | `page` | link do strony projektu |
-| `icon` | własna ikona (URL) |
+| `icon` | własna ikona (URL); trafia też do manifestu PWA jako 512 px (dowolny rozmiar, skalowana z zachowaniem proporcji) |
 | `asset` | wzorzec nazwy pliku; `{v}` = wersja, `{id}` = identyfikator |
 | `repo` | jawne `owner/repo`, gdy link nie jest adresem GitHuba |
 
@@ -98,7 +98,8 @@ rejestruje ją jako program do tych plików i dwuklik otwiera je w aplikacji.
 Dopisywanie odbywa się w `scripts/build_site.py` (funkcja `prepare_apps`), więc po każdej
 nowej wersji rozpakowanej z ZIP-a manifest i skrypt są tworzone od nowa. Rozszerzenia są
 zdefiniowane w `scripts/pwa.py` (`FILE_TYPES`); własny manifest narzędzia (np. SolidCraft)
-jest zachowywany, a tylko uzupełniany.
+jest zachowywany, a tylko uzupełniany. Ikona 512 px pochodzi z buildu, z `icon=` w `tools.txt`
+albo z zaszytych ścieżek repozytorium; mniejsza wersja 192 px powstaje z niej automatycznie.
 
 Plik z systemu trafia do aplikacji przez File Handling API (`launchQueue`); dołączany
 `officecraft-pwa.js` podaje go aplikacji jako przeciągnięcie pliku na kanwę.

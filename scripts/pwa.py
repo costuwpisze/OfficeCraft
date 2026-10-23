@@ -238,20 +238,42 @@ def _read_json(path: Path) -> Dict[str, Any]:
         return {}
 
 
-ICON_NAME = "officecraft-icon.png"
+ICON_LARGE = "officecraft-icon-512.png"
+ICON_SMALL = "officecraft-icon-192.png"
+
+
+def _resize_icon(source: Path, target: Path, size: int) -> bool:
+    """Tworzy kwadratową ikonę ``size`` px (Pillow). False, gdy brak Pillow."""
+    try:
+        from PIL import Image  # type: ignore[import-not-found]
+    except ImportError:
+        return False
+    try:
+        with Image.open(source) as image:
+            icon = image.convert("RGBA").resize((size, size), Image.LANCZOS)
+            icon.save(target, format="PNG", optimize=True)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def _icon_list(info: Dict[str, Any], site_dir: Path, app_dir: Path) -> List[Dict[str, Any]]:
-    """Ikony 192 i 512. Duża ikona (512 px) jest kopiowana do katalogu aplikacji."""
+    """Ikony 192 i 512. Duża ikona (512 px) jest kopiowana do katalogu aplikacji,
+    a mniejsza powstaje z niej przez przeskalowanie (gdy jest Pillow)."""
     large = (info.get("pwa_icon") or "").strip()
     source = site_dir / large.lstrip("/") if large else None
     if not source or not source.is_file():
         return []
-    shutil.copyfile(source, app_dir / ICON_NAME)
-    return [
-        {"src": ICON_NAME, "sizes": "192x192", "type": "image/png", "purpose": "any"},
-        {"src": ICON_NAME, "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    shutil.copyfile(source, app_dir / ICON_LARGE)
+    icons = [
+        {"src": ICON_LARGE, "sizes": "512x512", "type": "image/png", "purpose": "any"},
     ]
+    if _resize_icon(source, app_dir / ICON_SMALL, 192):
+        icons.insert(0, {"src": ICON_SMALL, "sizes": "192x192", "type": "image/png", "purpose": "any"})
+    else:
+        # Bez Pillow nie deklarujemy rozmiaru, ktorego plik nie ma.
+        icons.insert(0, {"src": ICON_LARGE, "sizes": "192x192", "type": "image/png", "purpose": "any"})
+    return icons
 
 
 def build_manifest(tool_id: str, info: Dict[str, Any], site_dir: Path, app_dir: Path) -> Dict[str, Any]:
@@ -290,7 +312,7 @@ def prepare_app(app_dir: Path, tool_id: str, info: Dict[str, Any]) -> bool:
     # Zachowaj to, co aplikacja sama zadeklarowala (np. wlasne ikony SolidCraft);
     # nasze wpisy (file_handlers, launch_handler) zawsze wygrywaja.
     for key, value in generated.items():
-        if key in ("file_handlers", "launch_handler") or key not in manifest:
+        if key in ("file_handlers", "launch_handler") or (key == "icons" and value) or key not in manifest:
             manifest[key] = value
 
     manifest_path.write_text(

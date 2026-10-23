@@ -19,7 +19,7 @@
 #   id=<identyfikator>        ścieżka w witrynie, domyślnie nazwa repo
 #   label=<nazwa>             nazwa do wyświetlenia
 #   page=<url>                link do strony projektu
-#   icon=<url>                własna ikona
+#   icon=<url>                własna ikona (także jako ikona PWA, skalowana do 512 px)
 #   asset=<wzorzec>           wzorzec assetu, {v} = wersja, {id} = identyfikator
 #   repo=<owner/repo>         jawne repozytorium (gdy link nie jest adresem GitHuba)
 

@@ -152,6 +152,28 @@ def find_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) ->
     return None
 
 
+def _save_pwa_icon(data: bytes, target: Path) -> bool:
+    """Zapisuje ikonę jako PNG 512x512. Bez Pillow akceptuje gotowy PNG."""
+    try:
+        import io
+
+        from PIL import Image, ImageOps  # type: ignore[import-not-found]
+    except ImportError:
+        if not data.startswith(b"\x89PNG\r\n\x1a\n"):
+            return False
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes(data)
+        return True
+    try:
+        with Image.open(io.BytesIO(data)) as image:
+            icon = ImageOps.pad(image.convert("RGBA"), (512, 512), color=(0, 0, 0, 0))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            icon.save(target, format="PNG", optimize=True)
+        return True
+    except Exception:  # noqa: BLE001
+        return False
+
+
 def pwa_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) -> Optional[str]:
     """Ikona 512 px do manifestu PWA, trzymana lokalnie (bez hotlinku)."""
     tool_id = tool["id"]
@@ -159,6 +181,15 @@ def pwa_icon(tool: Dict[str, Any], build_dir: Optional[Path], out_dir: Path) -> 
     target = out_dir / "assets" / "icons" / f"{tool_id}-512.png"
     if target.is_file() and target.stat().st_size > 0:
         return rel
+
+    override = (tool["overrides"].get("icon") or "").strip()
+    if override.startswith(("http://", "https://")):
+        try:
+            data = http_get(override, timeout=30)
+        except Exception:  # noqa: BLE001
+            data = b""
+        if data and _save_pwa_icon(data, target):
+            return rel
 
     if build_dir and build_dir.is_dir():
         for pattern in ("icons/512x512/*.png", "**/512x512/*.png"):
