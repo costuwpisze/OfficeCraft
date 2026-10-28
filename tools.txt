@@ -33,13 +33,16 @@ https://github.com/storytold/gridcraft
 Obliczaj, analizuj i wizualizuj dane w arkuszach kalkulacyjnych
 
 https://github.com/storytold/cadcraft
-Rysowanie 2D i 3D: warstwy, wymiary, kresowanie, DXF
+Rysuj w 2D i 3D: warstwy, wymiary, kresowanie, DXF
 
 https://github.com/tangency-labs/solidcraft
-Parametryczne modelowanie 3D
+Twórz parametryczne modele 3D
 
 https://github.com/storytold/deckcraft
 Projektuj, animuj i prezentuj slajdy w pokazach multimedialnych
+
+https://github.com/storytold/filmcraft
+Edytuj klipy: wideo, kolor oraz dźwięk
 
 https://github.com/storytold/vectorcraft
 Twórz grafikę wektorową: ścieżki, kształty, ilustracje, SVG i EPS
