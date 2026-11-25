@@ -109,7 +109,7 @@ def pick_asset(release: Dict[str, Any], tool: Dict[str, Any], version: str) -> O
 
     for asset in assets:
         name = (asset.get("name") or "").lower()
-        if name.endswith(".zip") and "-web-" in name:
+        if name.endswith(".zip") and "-web" in name:
             return asset
     return None
 
@@ -262,7 +262,43 @@ def extract_zip(zip_path: Path, dest: Path) -> int:
             with archive.open(info) as source, open(target, "wb") as handle:
                 shutil.copyfileobj(source, handle)
             written += 1
+    if strip == 1:
+        root = next(iter(roots))
+        rebased = _rebase_absolute_paths(dest, root)
+        if rebased:
+            print(f"  · przeliczone sciezki /{root}/ -> ./ w {rebased} plikach")
     return written
+
+
+REBASE_SUFFIXES = {".html", ".htm", ".js", ".mjs", ".css", ".json", ".webmanifest", ".svg", ".txt", ".map"}
+
+
+def _rebase_absolute_paths(root: Path, prefix: str) -> int:
+    """Zamienia ``/prefix/`` na ``./`` w plikach tekstowych.
+
+    Buildy publikowane na wlasnym serwerze pod sciezka ``/prefix/`` (np.
+    OpenCADStudio pod ``/app/``) uzywaja absolutnych adresow; po wstawieniu
+    aplikacji w podkatalog huba trzeba je przeliczyc na relatywne.
+    """
+    needle = f"/{prefix}/".encode()
+    changed = 0
+    for path in root.rglob("*"):
+        if not path.is_file() or path.suffix.lower() not in REBASE_SUFFIXES:
+            continue
+        try:
+            if path.stat().st_size > 5_000_000:
+                continue
+            data = path.read_bytes()
+        except OSError:
+            continue
+        if needle not in data:
+            continue
+        try:
+            path.write_bytes(data.replace(needle, b"./"))
+            changed += 1
+        except OSError:
+            continue
+    return changed
 
 
 # ---------------------------------------------------------------- manifest

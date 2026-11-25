@@ -26,17 +26,20 @@
 https://github.com/storytold/pdfcraft
 Czytaj, edytuj, podpisuj i zabezpieczaj pliki PDF
 
-https://github.com/storytold/wordcraft
-Twórz, formatuj i edytuj dokumenty tekstowe
-
-https://github.com/storytold/gridcraft
-Obliczaj, analizuj i wizualizuj dane w arkuszach kalkulacyjnych
+https://github.com/HakanSeven12/OpenCADStudio | label=OpenCADStudio | icon=https://raw.githubusercontent.com/HakanSeven12/OpenCADStudio/main/site/icon-512.png | asset=OpenCADStudio-v{v}-web.zip
+Rysuj i modeluj 2D/3D: DWG/DXF, warstwy, wymiary, renderowanie GPU
 
 https://github.com/storytold/cadcraft
 Rysuj w 2D i 3D: warstwy, wymiary, kresowanie, DXF
 
 https://github.com/tangency-labs/solidcraft
 Twórz parametryczne modele 3D
+
+https://github.com/storytold/wordcraft
+Twórz, formatuj i edytuj dokumenty tekstowe
+
+https://github.com/storytold/gridcraft
+Obliczaj, analizuj i wizualizuj dane w arkuszach kalkulacyjnych
 
 https://github.com/storytold/deckcraft
 Projektuj, animuj i prezentuj slajdy w pokazach multimedialnych

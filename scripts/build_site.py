@@ -99,7 +99,7 @@ def format_time(value: str) -> str:
     return stamp.astimezone().strftime("%d.%m.%Y %H:%M")
 
 
-def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
+def tool_card(tool_id: str, info: Dict[str, Any], base: str = "", lead: bool = False) -> str:
     fallback = esc(((info.get("label") or tool_id)[:1]).upper())
     icon = local_path(base, info.get("icon") or "")
     if icon:
@@ -112,8 +112,9 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
     repo = (info.get("repo") or "").strip().removeprefix("https://").removeprefix("http://")
     repo = repo.removeprefix("github.com/")
     repo_text = f"github.com/{repo}" if repo else ""
+    card_cls = "card card--lead" if lead else "card"
     return f"""
-      <a class="card" href="{esc(base)}tool/{esc(tool_id)}/">
+      <a class="{card_cls}" href="{esc(base)}tool/{esc(tool_id)}/">
         <div class="plate">{plate}</div>
         <div class="card-body">
           <h2>{esc(info.get('label') or tool_id)}</h2>
@@ -128,9 +129,10 @@ def tool_card(tool_id: str, info: Dict[str, Any], base: str = "") -> str:
       </a>"""
 
 
-def skipped_card(tool_id: str, reason: str) -> str:
+def skipped_card(tool_id: str, reason: str, lead: bool = False) -> str:
+    card_cls = "card card--disabled card--lead" if lead else "card card--disabled"
     return f"""
-      <div class="card card--disabled">
+      <div class="{card_cls}">
         <div class="plate"><span class="card-icon card-icon--fallback">?</span></div>
         <div class="card-body">
           <h2>{esc(tool_id)}</h2>
@@ -207,10 +209,11 @@ def main() -> int:
     # --- strona główna
     cards: List[str] = []
     for tool_id in known_ids:
+        lead = not cards  # pierwsza karta zajmuje caly wiersz
         if tool_id in tools:
-            cards.append(tool_card(tool_id, tools[tool_id]))
+            cards.append(tool_card(tool_id, tools[tool_id], lead=lead))
         else:
-            cards.append(skipped_card(tool_id, skipped.get(tool_id, "brak danych")))
+            cards.append(skipped_card(tool_id, skipped.get(tool_id, "brak danych"), lead=lead))
     for tool_id, info in tools.items():
         if tool_id not in known_ids:
             cards.append(tool_card(tool_id, info))

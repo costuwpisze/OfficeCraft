@@ -79,7 +79,8 @@ Przebieg `sync_tools.py`:
 1. pyta API GitHuba o najnowsze wydanie każdego narzędzia,
 2. porównuje wersję z wdrożoną (manifest z żywej strony albo plik `--state`),
 3. **pobiera tylko narzędzia, których wersja się zmieniła**,
-4. rozpakowuje ZIP (z pominięciem górnego folderu) do `site-out/apps/<id>/`,
+4. rozpakowuje ZIP (z pominięciem górnego folderu) do `site-out/apps/<id>/` i przelicza
+   absolutne ścieżki `/<folder>/` na `./` (buildy publikowane pod własną ścieżką, np. OpenCADStudio pod `/app/`),
 5. zapisuje `manifest.json`.
 
 Jeśli żadne narzędzia się nie zmieniły, skrypt nie pobiera nic i nie wgrywa nic -
@@ -92,7 +93,8 @@ zaznacz `force`.
 
 Każdy build w `apps/<id>/` dostaje przy każdym wdrożeniu `manifest.webmanifest` (nazwa, ikony
 192/512, `display: standalone`) oraz `file_handlers` - listę rozszerzeń, które dana aplikacja
-obsługuje. Dzięki temu po zainstalowaniu w Edge/Chrome ("Zainstaluj aplikację") system
+obsługuje. Jeśli aplikacja ma już własny manifest (np. `app.webmanifest` OpenCADStudio),
+wpisy trafiają do niego - strona nie dostaje drugiego linku `rel="manifest"`. Dzięki temu po zainstalowaniu w Edge/Chrome ("Zainstaluj aplikację") system
 rejestruje ją jako program do tych plików i dwuklik otwiera je w aplikacji.
 
 Dopisywanie odbywa się w `scripts/build_site.py` (funkcja `prepare_apps`), więc po każdej

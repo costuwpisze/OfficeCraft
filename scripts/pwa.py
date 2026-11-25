@@ -16,7 +16,7 @@ import json
 import re
 import shutil
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 MANIFEST_NAME = "manifest.webmanifest"
 SCRIPT_NAME = "officecraft-pwa.js"
@@ -52,6 +52,10 @@ FILE_TYPES: Dict[str, Dict[str, List[str]]] = {
         "text/tab-separated-values": [".tsv"],
     },
     "cadcraft": {
+        "image/vnd.dxf": [".dxf"],
+        "image/vnd.dwg": [".dwg"],
+    },
+    "opencadstudio": {
         "image/vnd.dxf": [".dxf"],
         "image/vnd.dwg": [".dwg"],
     },
@@ -300,13 +304,28 @@ def build_manifest(tool_id: str, info: Dict[str, Any], site_dir: Path, app_dir: 
     return manifest
 
 
+def _manifest_target(html: str, app_dir: Path) -> Tuple[Path, bool]:
+    """Plik manifestu, ktory juz wskazuje strona (bez dokladania drugiego linku)."""
+    link = re.search(r'<link[^>]+rel=["\']manifest["\'][^>]*>', html, re.IGNORECASE)
+    if link:
+        href = re.search(r'href=["\']([^"\']+)', link.group(0), re.IGNORECASE)
+        if href:
+            value = re.sub(r"[?#].*$", "", href.group(1).strip())
+            if value and not re.match(r"^(?:[a-z][a-z0-9+.-]*:|//|/)", value, re.IGNORECASE):
+                target = (app_dir / value).resolve()
+                if target.is_relative_to(app_dir.resolve()):
+                    return target, False
+    return app_dir / MANIFEST_NAME, True
+
+
 def prepare_app(app_dir: Path, tool_id: str, info: Dict[str, Any]) -> bool:
     """Pisze manifest i skrypt, dopisuje je do index.html. Idempotentne."""
     index = app_dir / "index.html"
     if not index.is_file():
         return False
 
-    manifest_path = app_dir / MANIFEST_NAME
+    html = index.read_text(encoding="utf-8")
+    manifest_path, add_link = _manifest_target(html, app_dir)
     manifest = _read_json(manifest_path)
     generated = build_manifest(tool_id, info, app_dir.parent.parent, app_dir)
     # Zachowaj to, co aplikacja sama zadeklarowala (np. wlasne ikony SolidCraft);
@@ -320,9 +339,8 @@ def prepare_app(app_dir: Path, tool_id: str, info: Dict[str, Any]) -> bool:
     )
     (app_dir / SCRIPT_NAME).write_text(SCRIPT, encoding="utf-8")
 
-    html = index.read_text(encoding="utf-8")
     changed = False
-    if not re.search(r'<link[^>]+rel=["\']manifest["\']', html, re.IGNORECASE):
+    if add_link:
         html = html.replace(
             "</head>", f'  <link rel="manifest" href="{MANIFEST_NAME}">\n  </head>', 1
         )
